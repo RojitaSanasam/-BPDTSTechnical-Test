@@ -1,0 +1,410 @@
+{
+	"info": {
+		"_postman_id": "61cf204b-b606-5971-ceff-c69307f5a773",
+		"name": "!TechnicalTest_RojitaSanasam",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "InstructionsTests",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "89a1aebe-d786-477a-8c76-7c53f58ce504",
+						"exec": [
+							"pm.test(\"/instructions: Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"/instructions: Body is correct\", function () {",
+							"",
+							"    pm.response.to.have.body('{\"todo\": \"Create a short automated test for this API. Check that the data returned by the API is valid, and that ensure that each valid operation can be successfully called for each endpoint. Once you\\'ve built the tests, push the answer to Github or Gitlab, and send us a link. \"}\\n');",
+							"});",
+							"",
+							"postman.setNextRequest(\"UsersTests\");",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "fed0636a-db9f-4728-9ded-27c53c290b3f",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://bpdts-test-app-v2.herokuapp.com/instructions",
+					"protocol": "http",
+					"host": [
+						"bpdts-test-app-v2",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"instructions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UsersTests",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "c86d9ac3-9aa8-445a-adbc-da0b4a2bcf9e",
+						"exec": [
+							"pm.test(\"/users: Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"var jsonData = JSON.parse(responseBody);",
+							"",
+							"for (var i = 0; i < jsonData.length; i++) {",
+							"    var user = jsonData[i];",
+							"",
+							"    const globalFunctions = eval(globals.loadGlobalFunctions);",
+							"    globalFunctions.validateUser(\"/users [\"+(i+1)+\"/\"+jsonData.length+\"]\",user);",
+							"",
+							"    pm.globals.set(\"ids[\"+i+\"]\", user.id);",
+							"}",
+							"pm.globals.set(\"array_size\", i);",
+							"pm.globals.set(\"iterator\", 0);",
+							"pm.globals.set(\"id\", pm.globals.get(\"ids[0]\"));",
+							"",
+							"postman.setNextRequest(\"UserIdTests\");",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "b467b77f-3ca9-49b2-b8d8-c531f095f0f5",
+						"exec": [
+							"\r",
+							"pm.globals.clear();\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://bpdts-test-app-v2.herokuapp.com/users",
+					"protocol": "http",
+					"host": [
+						"bpdts-test-app-v2",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UserIdTests",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "d1ddac41-5b02-4290-84cf-3b7e94cd45c0",
+						"exec": [
+							"const userSchema = {\r",
+							"  \"type\": \"object\",\r",
+							"  \"properties\": {\r",
+							"        \"id\": {\r",
+							"          \"type\": \"integer\"\r",
+							"        },\r",
+							"        \"first_name\": {\r",
+							"          \"type\": \"string\",\r",
+							"          \"pattern\": \"^[A-Z][a-z]+-?[a-z]*$\"\r",
+							"        },\r",
+							"        \r",
+							"        \"last_name\": {\r",
+							"          \"type\": \"string\",\r",
+							"          \"pattern\": \"^([A-Za-z]){0,2}'? ?([A-Z][a-z]+)+(-|\\.)?[a-z]*$\"\r",
+							"        },\r",
+							"        \"email\": {\r",
+							"          \"type\": \"string\",\r",
+							"          \"pattern\": \"^([a-zA-Z0-9_.+-])+@([a-zA-Z0-9_.+-])+\\.([0-9]|[a-z])+$\"\r",
+							"        },\r",
+							"        \"ip_address\": {\r",
+							"          \"type\": \"string\",\r",
+							"           \"pattern\": \"^([0-9])+\\.([0-9])+\\.([0-9])+\\.([0-9])+$\"\r",
+							"        },\r",
+							"        \"latitude\": {\r",
+							"          \"type\": [\"number\", 'string']\r",
+							"        },\r",
+							"        \"longitude\": {\r",
+							"          \"type\": [\"number\", 'string']\r",
+							"        },\r",
+							"        \"city\": {\r",
+							"          \"type\": \"string\",\r",
+							"          \"pattern\": \"^.+$\"\r",
+							"        },\r",
+							"      },\r",
+							"      \"required\": [\r",
+							"        \"id\",\r",
+							"        \"email\",\r",
+							"        \"first_name\",\r",
+							"        \"last_name\",\r",
+							"        \"latitude\",\r",
+							"        \"longitude\",\r",
+							"        \"city\"\r",
+							"      ]\r",
+							"\r",
+							"};\r",
+							"\r",
+							"pm.test(\"/user/\"+pm.globals.get(\"id\")+\": Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"var user = JSON.parse(responseBody);\r",
+							"\r",
+							"pm.test(\"/user/\"+pm.globals.get(\"id\")+\": User schema is valid\", function() {\r",
+							"        pm.expect(tv4.validate(user, userSchema)).to.be.true;\r",
+							"    });\r",
+							"\r",
+							"pm.globals.set(\"cities[\"+pm.globals.get(\"iterator\")+\"]\", user.city); \r",
+							"\r",
+							"pm.globals.set(\"iterator\", Number(pm.globals.get(\"iterator\"))+1);\r",
+							"\r",
+							"if(Number(pm.globals.get(\"iterator\"))<Number(pm.globals.get(\"array_size\"))) {\r",
+							"    \r",
+							"    pm.globals.set(\"id\", pm.globals.get(\"ids[\"+pm.globals.get(\"iterator\")+\"]\"));\r",
+							"\r",
+							"    postman.setNextRequest(\"UserIdTests\");\r",
+							"} else {\r",
+							"  postman.setNextRequest(\"CityTests\");\r",
+							"}\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "90ba6d20-8095-4b00-b134-31bd8296502a",
+						"exec": [
+							"console.log(\"id \"+ pm.globals.get(\"id\"));\r",
+							"console.log(\"iterator \"+ pm.globals.get(\"iterator\"));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://bpdts-test-app-v2.herokuapp.com/user/{{id}}",
+					"protocol": "http",
+					"host": [
+						"bpdts-test-app-v2",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"user",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CityTests",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "981668e8-3ab6-4304-9930-8f4a61e4586e",
+						"exec": [
+							"pm.test(\"/\"+pm.globals.get(\"encoded_city\")+\"/users (name=\" + pm.globals.get(\"city\")+\"): Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"var jsonData = JSON.parse(responseBody);\r",
+							"\r",
+							"for (var i = 0; i < jsonData.length; i++) {\r",
+							"    var user = jsonData[i];\r",
+							"\r",
+							"    const globalFunctions = eval(globals.loadGlobalFunctions);\r",
+							"    globalFunctions.validateUser(\"/\"+pm.globals.get(\"encoded_city\")+\"/users [\"+(i+1)+\"/\"+jsonData.length+\"]\",user);\r",
+							"\r",
+							"}\r",
+							"\r",
+							"pm.globals.set(\"iterator\", Number(pm.globals.get(\"iterator\"))+1);\r",
+							"\r",
+							"var i = Number(pm.globals.get(\"iterator\"));\r",
+							"var array_s = Number(pm.globals.get(\"array_size\"));\r",
+							"\r",
+							"if(i<array_s) { \r",
+							"    var count_of_occurances = 0;\r",
+							"\r",
+							"    for (j=i;j<array_s;j++) {\r",
+							"        var c = pm.globals.get(\"cities[\"+j+\"]\");\r",
+							"        if(pm.globals.get(\"city\")===c){\r",
+							"            pm.globals.set(\"cities[\"+j+\"]\",\"!skip\");\r",
+							"            count_of_occurances++;\r",
+							"        }\r",
+							"    }  \r",
+							"    console.log(\"!SKIPPING \"+ pm.globals.get(\"city\") +\" \"+count_of_occurances+\" times\");\r",
+							"\r",
+							"\r",
+							"    pm.globals.set(\"city\", pm.globals.get(\"cities[\"+i+\"]\"));\r",
+							"\r",
+							"    postman.setNextRequest(\"CityTests\");\r",
+							"} else {\r",
+							"    console.log(\"THE END\");\r",
+							"    console.log(\"city \"+ pm.globals.get(\"city\"));\r",
+							"    console.log(\"iterator \"+ i);\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "83ee84a8-8cd2-4f89-a7ff-f0e2770d5ad5",
+						"exec": [
+							"var c = pm.globals.get(\"city\");\r",
+							"if(!c){\r",
+							"    pm.globals.set(\"city\",pm.globals.get(\"cities[0]\"));\r",
+							"    pm.globals.set(\"iterator\", 0); \r",
+							"} else if (c===\"!skip\") {\r",
+							"    console.log(\"!SKIPPED iterator \"+pm.globals.get(\"iterator\"));\r",
+							"    pm.globals.set(\"iterator\", Number(pm.globals.get(\"iterator\"))+1);\r",
+							"    pm.globals.set(\"city\", pm.globals.get(\"cities[\"+pm.globals.get(\"iterator\")+\"]\"));\r",
+							"    postman.setNextRequest(\"CityTests\");\r",
+							"} else {\r",
+							"    pm.globals.set(\"encoded_city\",encodeURIComponent(pm.globals.get(\"city\")));\r",
+							"\r",
+							"    console.log(\"city \"+ pm.globals.get(\"city\"));\r",
+							"    console.log(\"encoded_city \"+ pm.globals.get(\"encoded_city\"));\r",
+							"    console.log(\"iterator \"+ pm.globals.get(\"iterator\"));\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://bpdts-test-app-v2.herokuapp.com/city/{{encoded_city}}/users",
+					"protocol": "http",
+					"host": [
+						"bpdts-test-app-v2",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"city",
+						"{{encoded_city}}",
+						"users"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "a8de1294-ccd4-4172-bcb5-570ba14dca8f",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "c39b924c-ab84-439e-ac55-2a61ead2df94",
+				"type": "text/javascript",
+				"exec": [
+					"pm.globals.set(\"loadGlobalFunctions\", function loadGlobalFunctions() {",
+					"  let globalFunctions = {};",
+					"",
+					"  const userSchema = {",
+					"    \"type\": \"object\",",
+					"    \"properties\": {",
+					"          \"id\": {",
+					"            \"type\": \"integer\"",
+					"          },",
+					"          \"first_name\": {",
+					"            \"type\": \"string\",",
+					"            \"pattern\": \"^[A-Z][a-z]+-?[a-z]*$\"",
+					"          },",
+					"          ",
+					"          \"last_name\": {",
+					"            \"type\": \"string\",",
+					"            \"pattern\": \"^([A-Za-z]){0,2}'? ?([A-Z][a-z]+)+(-|\\.)?[a-z]*$\"",
+					"          },",
+					"          \"email\": {",
+					"            \"type\": \"string\",",
+					"            \"pattern\": \"^([a-zA-Z0-9_.+-])+@([a-zA-Z0-9_.+-])+\\.([0-9]|[a-z])+$\"",
+					"          },",
+					"          \"ip_address\": {",
+					"            \"type\": \"string\",",
+					"            \"pattern\": \"^([0-9])+\\.([0-9])+\\.([0-9])+\\.([0-9])+$\"",
+					"          },",
+					"          \"latitude\": {",
+					"            \"type\": [\"number\", 'string']",
+					"          },",
+					"          \"longitude\": {",
+					"            \"type\": [\"number\", 'string']",
+					"          }",
+					"        },",
+					"        \"required\": [",
+					"          \"id\",",
+					"          \"email\",",
+					"          \"first_name\",",
+					"          \"last_name\",",
+					"          \"latitude\",",
+					"          \"longitude\"",
+					"        ]",
+					"",
+					"  };",
+					"",
+					"  globalFunctions.validateUser = function validateUser(request_descr,u) {",
+					"        pm.test(request_descr+': User schema is valid (user id='+u.id+')', function() {",
+					"        pm.expect(tv4.validate(u, userSchema)).to.be.true;",
+					"    });",
+					"    }",
+					"    ",
+					"  return globalFunctions;",
+					"} + '; loadGlobalFunctions();');"
+				]
+			}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
